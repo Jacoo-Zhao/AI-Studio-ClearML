@@ -28,10 +28,11 @@ def run_pipeline():
         name="Pipeline demo", project="examples", version="0.0.1", add_pipeline_tags=False
     )
 
-    # pipe.add_parameter(
-    #     "url",
-    #     "dataset_url",
-    # )
+    pipe.add_parameter(
+        "url",
+        "https://github.com/allegroai/events/raw/master/odsc20-east/generic/iris_dataset.pkl",
+        "dataset_url",
+    )
 
     pipe.set_default_execution_queue("pipeline")
 
@@ -66,6 +67,6 @@ def run_pipeline():
     pipe.start_locally()
 
     # Starting the pipeline (in the background)
-    # pipe.start(queue="pipeline")  # already set pipeline queue
+    # pipe.start(queue="use_diffent_queue_name_for_pipeline_itself")
 
     print("done")
