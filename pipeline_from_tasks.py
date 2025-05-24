@@ -48,27 +48,10 @@ def run_pipeline():
         }
     )
 
-    # Add initial training step
-    pipe.add_step(
-        name="stage_train",
-        parents=["stage_process"],
-        base_task_project="AI_Studio_Demo",
-        base_task_name="Pipeline step 3 train model",
-        execution_queue=EXECUTION_QUEUE,
-        parameter_override={
-            "General/processed_dataset_id": "${stage_process.parameters.General/processed_dataset_id}",
-            "General/test_queue": EXECUTION_QUEUE,
-            "General/num_epochs": 20,
-            "General/batch_size": 16,
-            "General/learning_rate": 1e-3,
-            "General/weight_decay": 1e-5
-        }
-    )
-
     # Add HPO step
     pipe.add_step(
         name="stage_hpo",
-        parents=["stage_train", "stage_process", "stage_data"],
+        parents=["stage_process", "stage_data"],
         base_task_project="AI_Studio_Demo",
         base_task_name="HPO: Train Model",
         execution_queue=EXECUTION_QUEUE,
@@ -79,7 +62,11 @@ def run_pipeline():
             "General/time_limit_minutes": 20,
             "General/run_as_service": False,
             "General/dataset_task_id": "${stage_data.id}",
-            "General/base_train_task_id": "${stage_train.id}"
+            "General/base_train_task_id": "8b3f72f435704677abe4e27323d3eba3",
+            "General/num_epochs": 20,
+            "General/batch_size": 16,
+            "General/learning_rate": 1e-3,
+            "General/weight_decay": 1e-5
         }
     )
 
