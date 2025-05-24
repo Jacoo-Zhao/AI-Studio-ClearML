@@ -1,5 +1,5 @@
 from clearml import Task, Dataset
-from clearml.automation import HyperParameterOptimizer
+from clearml.automation import HyperParameterOptimizer, ClearmlJob
 from clearml.automation import UniformIntegerParameterRange, UniformParameterRange
 import logging
 import time
@@ -20,12 +20,14 @@ task = Task.init(
 
 # Connect parameters
 args = {
-    'base_train_task_id': '8b3f72f435704677abe4e27323d3eba3',  # Will be set from pipeline
+    'base_train_task_id': '8b3f72f435704677abe4e27323d3eba3',  # ID of the "template" task that performed model training
     'num_trials': 3,  # Reduced from 10 to 3 trials
     'time_limit_minutes': 20,  # Reduced from 60 to 5 minutes
     'run_as_service': False,
-    'test_queue': 'pipeline',  # Queue for test tasks
+    
+    # Parameters from the template task of model training
     'processed_dataset_id': '99e286d358754697a37ad75c279a6f0a',  # Will be set from pipeline
+    'test_queue': 'pipeline',  # Queue for test tasks
     'num_epochs': 20,  # Reduced from 50 to 20 epochs
     'batch_size': 32,  # Default batch size
     'learning_rate': 1e-3,  # Default learning rate
@@ -67,9 +69,23 @@ except Exception as e:
     logger.error(f"Failed to verify dataset: {e}")
     raise
 
+# Override the template task parameters
+base_task = ClearmlJob(
+    base_task_id=BASE_TRAIN_TASK_ID,
+    parameter_override={
+        "processed_dataset_id": args['processed_dataset_id'],
+        "test_queue": args['test_queue'],
+        "num_epochs": args['num_epochs'],
+        "batch_size": args['batch_size'],
+        "learning_rate": args['learning_rate'],
+        "weight_decay": args['weight_decay']
+    },
+    disable_clone_task=True, # Use the base_task_id directly (base-task must be in draft-mode / created)
+)
+
 # Create the HPO task
 hpo_task = HyperParameterOptimizer(
-    base_task_id=BASE_TRAIN_TASK_ID,
+    base_task_id=base_task.task_id(),
     hyper_parameters=[
         UniformIntegerParameterRange('num_epochs', min_value=10, max_value=args['num_epochs']),
         UniformIntegerParameterRange('batch_size', min_value=16, max_value=64),  # Reduced range
