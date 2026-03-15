@@ -7,19 +7,34 @@ This repository provides a minimal, reproducible example of how to use [ClearML]
 ## 📦 Project Structure
 
 ```
-├── AI-Studio-ClearML.ipynb           # End-to-end demo notebook
-├── ClearML_Pipeline_Demo.ipynb       # Task-based pipeline demo notebook
-├── clearml_start_agent.ipynb         # Start ClearML Agent daemon (queue configurable)
-├── clearml_stop_agent.ipynb          # Stop ClearML Agent daemon
-├── main.py                           # Entry point (runs `run_pipeline()`)
-├── pipeline_from_tasks.py            # Pipeline built from existing ClearML Tasks
-├── s1_dataset_artifact.py            # Step 1: Upload dataset as artifact
-├── s2_data_preprocessing.py          # Step 2: Preprocess dataset
-├── s3_train_model.py                 # Step 3: Train model using preprocessed data
-├── task_hpo.py                       # Hyperparameter optimization example (Optuna)
-├── requirements.txt                  # Pinned Python dependencies
-├── model_artifacts/                  # Example outputs or saved models
-└── work_dataset/                     # Dataset samples and usage examples
+AI-Studio-ClearML/
+├── .github/workflows/
+│   └── pipeline.yaml                  # CI/CD: runs s1 on PR to main
+│
+├── model_artifacts/                   # Example outputs or saved models
+├── work_dataset/                      # Dataset samples (Iris.csv)
+│
+│── ─── Demo 1: Basic Pipeline (s1 → s3) ───
+├── s1_dataset_artifact.py             # Step 1: Upload dataset as pickle artifact
+├── s2_data_preprocessing.py           # Step 2: Preprocess (artifact API)
+├── s3_train_model.py                  # Step 3: Train model (hardcoded params)
+├── pipeline_from_tasks.py             # 3-step pipeline orchestrator
+│
+│── ─── Demo 2: HPO Pipeline (s1 → final model) ───
+├── hpo_s1_dataset_artifact.py         # Step 1: Upload dataset (ClearML Dataset API)
+├── hpo_s2_process_dataset.py          # Step 2: Preprocess (ClearML Dataset API)
+├── hpo_s3_train_model.py              # Step 3: Train model (parameterized for HPO)
+├── task_hpo.py                        # Step 4: Hyperparameter optimization
+├── final_model.py                     # Step 5: Train final model with best params
+├── pipeline_hpo.py                    # 5-step pipeline orchestrator
+│
+│── ─── Shared ───
+├── main.py                            # Entry point (runs pipeline_from_tasks)
+├── requirements.txt                   # Pinned Python dependencies
+├── AI-Studio-Agent.ipynb              # Start/stop ClearML Agent daemon
+├── AI-Studio-ClearML.ipynb            # End-to-end demo notebook
+├── AI-Studio-ClearML_HPO_ZOE.ipynb    # HPO demo notebook (Colab)
+└── ClearML_Pipeline_Demo.ipynb        # Task-based pipeline demo notebook
 ```
 
 ---
@@ -27,10 +42,13 @@ This repository provides a minimal, reproducible example of how to use [ClearML]
 ## 🧪 Features
 
 - ✅ Task-based pipeline using `PipelineController.add_step(...)`
+- ✅ Hyperparameter Optimization (HPO) with ClearML `HyperParameterOptimizer`
+- ✅ Final model retraining with best HPO parameters
+- ✅ CI/CD pipeline via GitHub Actions
 - [TBD] Function-based pipeline using `PipelineController.add_function_step(...)`
 - ✅ Reusable ClearML Task templates
 - ✅ Dataset and model artifact management with ClearML
-- ✅ End-to-end ML workflow: Dataset → Preprocessing → Training
+- ✅ End-to-end ML workflow: Dataset → Preprocessing → Training → HPO → Final Model
 - ✅ Fully compatible with ClearML Hosted and ClearML Server
 
 ---
@@ -63,28 +81,22 @@ Use [https://app.clear.ml](https://app.clear.ml) to register for a free account 
 ```bash
 pip install clearml-agent
 ```
-
-> **Queue note:** this repo’s pipeline is configured with `pipe.set_default_execution_queue("task")` in `pipeline_from_tasks.py`.  
-> If you use an agent, start it with `--queue task` (or change the queue name in the code / notebooks to match).
-
 ---
 
 ## 🛠️ How to Use
 
-### Using notebooks
+### Using Colab: refer to ClearML_Pipeline_Demo.ipynb.
 
-- `ClearML_Pipeline_Demo.ipynb`: task-based pipeline walkthrough
-- `AI-Studio-ClearML.ipynb`: additional end-to-end examples
-- `clearml_start_agent.ipynb` / `clearml_stop_agent.ipynb`: start/stop a `clearml-agent` daemon (edit the queue name if needed)
+---
 
-### 🔁 Option 1: Pipeline from Predefined ClearML Tasks
+### 🔁 Demo 1: Basic Pipeline (3 Steps)
 
-To use a task-based pipeline, follow these steps:
+A simple pipeline demonstrating ClearML task-based pipelines with dataset artifacts.
 
 #### Step 1: Register the Base Tasks
 
-**Before running the pipeline, execute the following scripts \*\*once\*\* to create reusable ClearML Tasks:**
-> **Note:** When running for the first time, comment out `task.execute_remotely()` in each step file to create the task template locally (without dispatching to an agent).
+**Before running the pipeline, execute the following scripts once to create reusable ClearML Tasks:**
+> **Note:** When running for the first time, comment out `task.execute_remotely()` in each .py file to successfully create a task template.
 
 ```bash
 # Step 1: Upload dataset
@@ -99,48 +111,90 @@ python s3_train_model.py
 
 These will appear in your ClearML dashboard and serve as base tasks for the pipeline.
 
-#### Step 1.5: (Optional) Run on a ClearML Agent queue
+#### Step 1.5: Initial ClearML Queue
+Create Queue with name as `task` (or your customized one), ensure it is consistent in `pipeline_from_tasks.py`:
+```python
+pipe.set_default_execution_queue("task")
+```
 
-By default, `pipeline_from_tasks.py` runs the pipeline locally via `pipe.start_locally()` (no agent needed).
-
-If you want remote execution:
-- Start a ClearML agent listening on the same queue name as the pipeline’s default execution queue (currently `"task"`).
-- In `pipeline_from_tasks.py`, comment out `pipe.start_locally()` and use `pipe.start(queue="task")` instead.
+Run the agent for queue worker:
+```bash
+clearml-agent daemon --queue "task" --detached
+```
 
 #### Step 2: Run the Pipeline
 
 Once all base tasks are registered, run the pipeline:
 
 ```bash
-python main.py # Where we execute the run_pipeline()
+python main.py  # Executes run_pipeline() from pipeline_from_tasks.py
 ```
 
 ---
 
-### 🔧 [TBD] Option 2: Pipeline from Local Python Functions 
+### 🧬 Demo 2: HPO Pipeline (5 Steps)
+
+An advanced pipeline that adds hyperparameter optimization and final model retraining.
+Uses the ClearML Dataset API for more robust data management.
+
+#### Step 1: Register the HPO Base Tasks
+
+> **Note:** When running for the first time, comment out `task.execute_remotely()` in each .py file to successfully create a task template.
+
+```bash
+# Step 1: Upload dataset (ClearML Dataset API)
+python hpo_s1_dataset_artifact.py
+
+# Step 2: Preprocess dataset (ClearML Dataset API)
+python hpo_s2_process_dataset.py
+
+# Step 3: Train model (parameterized for HPO)
+python hpo_s3_train_model.py
+
+# Step 4: Hyperparameter optimization
+python task_hpo.py
+
+# Step 5: Final model with best parameters
+python final_model.py
+```
+
+#### Step 1.5: Initial ClearML Queue
+Create Queue with name as `pipeline` (or your customized one), ensure it is consistent in `pipeline_hpo.py`:
+```python
+EXECUTION_QUEUE = "pipeline"
+```
+
+Run the agent for queue worker:
+```bash
+clearml-agent daemon --queue "pipeline" --detached
+```
+
+#### Step 2: Run the HPO Pipeline
+
+```bash
+python pipeline_hpo.py
+```
+
+---
+
+### 🔧 [TBD] Option 3: Pipeline from Local Python Functions
 
 This version demonstrates using `add_function_step(...)` to wrap Python logic as pipeline steps.
 
 ---
 
-### 🧩 Run Individual Pipeline Steps
+### ⚙️ CI/CD
 
-You can run each task separately as well:
+The repository includes a GitHub Actions workflow (`.github/workflows/pipeline.yaml`) that:
+1. Triggers on pull requests to `main`
+2. Sets up Python 3.10 and installs dependencies
+3. Verifies ClearML connectivity using GitHub Secrets
+4. Runs `s1_dataset_artifact.py` as a smoke test
 
-> **Note:** When running for the first time, comment out `task.execute_remotely()` in the code file to successfully create a task template.
-> **Note:** `s2_data_preprocessing.py` and `s3_train_model.py` require a `dataset_task_id` (the pipeline wires this automatically). If running them standalone, set `args["dataset_task_id"]` to a valid upstream task ID.
-> 
-```bash
-# Step 1: Upload dataset
-python s1_dataset_artifact.py
-
-# Step 2: Preprocess data
-python s2_data_preprocessing.py
-
-# Step 3: Train model
-python s3_train_model.py
-```
-
+**Required GitHub Secrets:**
+- `CLEARML_API_ACCESS_KEY`
+- `CLEARML_API_SECRET_KEY`
+- `CLEARML_API_HOST`
 
 ---
 
