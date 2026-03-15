@@ -28,7 +28,7 @@ def run_pipeline():
     # Connecting ClearML with the current pipeline,
     # from here on everything is logged automatically
     pipe = PipelineController(
-        name="AI_Studio_Pipeline_Demo", project="AI_Studio_Demo", version="0.0.1", add_pipeline_tags=False
+        name="AI_Studio_Basic_Pipeline", project="AI_Studio_Basic_Demo", version="0.0.1", add_pipeline_tags=False
     )
 
     # pipe.add_parameter(
@@ -42,11 +42,11 @@ def run_pipeline():
     #     description="URL of the dataset"
     # )
 
-    pipe.set_default_execution_queue("task")
+    pipe.set_default_execution_queue("basic_demo")
 
     pipe.add_step(
         name="stage_data",
-        base_task_project="AI_Studio_Demo",
+        base_task_project="AI_Studio_Basic_Demo",
         base_task_name="Pipeline step 1 dataset artifact",
         # parameter_override={"General/dataset_url": "${pipeline.url}"},
     )
@@ -54,7 +54,7 @@ def run_pipeline():
     pipe.add_step(
         name="stage_process",
         parents=["stage_data"],
-        base_task_project="AI_Studio_Demo",
+        base_task_project="AI_Studio_Basic_Demo",
         base_task_name="Pipeline step 2 process dataset",
         parameter_override={
             "General/dataset_task_id": "${stage_data.id}",
@@ -66,7 +66,7 @@ def run_pipeline():
     pipe.add_step(
         name="stage_train",
         parents=["stage_process"],
-        base_task_project="AI_Studio_Demo",
+        base_task_project="AI_Studio_Basic_Demo",
         base_task_name="Pipeline step 3 train model",
         parameter_override={"General/dataset_task_id": "${stage_process.id}"},
     )
@@ -75,6 +75,6 @@ def run_pipeline():
     pipe.start_locally()
 
     # Starting the pipeline (in the background)
-    # pipe.start(queue="task")
+    # pipe.start(queue="basic_demo")
     # pipe.start(queue="pipeline_controller")
     # print("done")
