@@ -1,14 +1,14 @@
-# Core dependencies (using main's newer version pins)
-clearml==1.18.0
-matplotlib==3.7.1
-numpy==1.24.4
-pandas==1.5.3
-scikit_learn==1.3.0
-torch==2.3.1
-optuna==4.3.0
+# Core dependencies (Python 3.12 compatible)
+clearml>=1.16.0
+matplotlib>=3.8.0
+numpy>=1.26.0
+pandas>=2.1.0
+scikit-learn>=1.3.0
+torch>=2.3.0
+optuna>=3.6.0
 
 # Additional dependencies required by HPO pipeline
-torchvision>=0.15.2
-seaborn>=0.12.0
-tqdm>=4.65.0
+torchvision>=0.18.0
+seaborn>=0.13.0
+tqdm>=4.66.0
 PyYAML>=6.0.1
