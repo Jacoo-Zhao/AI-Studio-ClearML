@@ -4,7 +4,7 @@ from clearml import Task, StorageManager
 import os
 
 # create an dataset experiment
-task = Task.init(project_name="AI_Studio_Demo", task_name="Pipeline step 1 dataset artifact")
+task = Task.init(project_name="AI_Studio_Basic_Demo", task_name="Pipeline step 1 dataset artifact")
 
 # only create the task, we will actually execute it later
 task.execute_remotely()

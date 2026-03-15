@@ -25,7 +25,7 @@ os.makedirs('figs', exist_ok=True)
 
 # Initialize the task
 task = Task.init(
-    project_name='AI_Studio_Demo',
+    project_name='AI_Studio_HPO_Demo',
     task_name='Final Model Training',
     task_type=Task.TaskTypes.training,
     reuse_last_task_id=False
@@ -35,7 +35,7 @@ task = Task.init(
 args = {
     'processed_dataset_id': '99e286d358754697a37ad75c279a6f0a',  # Will be set from pipeline
     'hpo_task_id': None,  # Will be set from pipeline
-    'test_queue': 'pipeline',  # Queue for test tasks
+    'test_queue': 'hpo_demo',  # Queue for test tasks
     'num_epochs': 50,  # Will be overridden by best HPO parameters
     'batch_size': 32,  # Will be overridden by best HPO parameters
     'learning_rate': 1e-3,  # Will be overridden by best HPO parameters

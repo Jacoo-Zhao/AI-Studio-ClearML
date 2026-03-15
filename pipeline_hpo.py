@@ -11,13 +11,13 @@ logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 # Queue configuration - using same queue for everything
-EXECUTION_QUEUE = "pipeline"
+EXECUTION_QUEUE = "hpo_demo"
 
 def run_pipeline():
     # Connecting ClearML with the current pipeline
     pipe = PipelineController(
-        name="AI_Studio_Pipeline_Demo", 
-        project="AI_Studio_Demo", 
+        name="AI_Studio_HPO_Pipeline", 
+        project="AI_Studio_HPO_Demo", 
         version="0.0.1", 
         add_pipeline_tags=False
     )
@@ -29,8 +29,8 @@ def run_pipeline():
     # Add dataset creation step
     pipe.add_step(
         name="stage_data",
-        base_task_project="AI_Studio_Demo",
-        base_task_name="Pipeline step 1 dataset artifact",
+        base_task_project="AI_Studio_HPO_Demo",
+        base_task_name="HPO step 1 dataset artifact",
         execution_queue=EXECUTION_QUEUE
     )
 
@@ -38,8 +38,8 @@ def run_pipeline():
     pipe.add_step(
         name="stage_process",
         parents=["stage_data"],
-        base_task_project="AI_Studio_Demo",
-        base_task_name="Pipeline step 2 process dataset",
+        base_task_project="AI_Studio_HPO_Demo",
+        base_task_name="HPO step 2 process dataset",
         execution_queue=EXECUTION_QUEUE,
         parameter_override={
             "General/dataset_task_id": "${stage_data.id}",
@@ -52,8 +52,8 @@ def run_pipeline():
     pipe.add_step(
         name="stage_train",
         parents=["stage_process"],
-        base_task_project="AI_Studio_Demo",
-        base_task_name="Pipeline step 3 train model",
+        base_task_project="AI_Studio_HPO_Demo",
+        base_task_name="HPO step 3 train model",
         execution_queue=EXECUTION_QUEUE,
         parameter_override={
             "General/processed_dataset_id": "${stage_process.parameters.General/processed_dataset_id}",
@@ -69,7 +69,7 @@ def run_pipeline():
     pipe.add_step(
         name="stage_hpo",
         parents=["stage_train", "stage_process", "stage_data"],
-        base_task_project="AI_Studio_Demo",
+        base_task_project="AI_Studio_HPO_Demo",
         base_task_name="HPO: Train Model",
         execution_queue=EXECUTION_QUEUE,
         parameter_override={
@@ -87,7 +87,7 @@ def run_pipeline():
     pipe.add_step(
         name="stage_final_model",
         parents=["stage_hpo", "stage_process"],
-        base_task_project="AI_Studio_Demo",
+        base_task_project="AI_Studio_HPO_Demo",
         base_task_name="Final Model Training",
         execution_queue=EXECUTION_QUEUE,
         parameter_override={

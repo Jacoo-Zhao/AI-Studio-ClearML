@@ -12,7 +12,7 @@ logger = logging.getLogger(__name__)
 
 # Initialize the HPO task
 task = Task.init(
-    project_name='AI_Studio_Demo',
+    project_name='AI_Studio_HPO_Demo',
     task_name='HPO: Train Model',
     task_type=Task.TaskTypes.optimizer,
     reuse_last_task_id=False
@@ -24,7 +24,7 @@ args = {
     'num_trials': 3,  # Reduced from 10 to 3 trials
     'time_limit_minutes': 20,  # Reduced from 60 to 5 minutes
     'run_as_service': False,
-    'test_queue': 'pipeline',  # Queue for test tasks
+    'test_queue': 'hpo_demo',  # Queue for test tasks
     'processed_dataset_id': '99e286d358754697a37ad75c279a6f0a',  # Will be set from pipeline
     'num_epochs': 20,  # Reduced from 50 to 20 epochs
     'batch_size': 32,  # Default batch size

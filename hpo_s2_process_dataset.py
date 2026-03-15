@@ -11,7 +11,7 @@ logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 # Initialize the task
-task = Task.init(project_name="AI_Studio_Demo", task_name="Pipeline step 2 process dataset")
+task = Task.init(project_name="AI_Studio_HPO_Demo", task_name="HPO step 2 process dataset")
 
 # Connect parameters
 args = {
@@ -50,7 +50,7 @@ X_train, X_test, y_train, y_test = train_test_split(
 # Create a new dataset in ClearML
 dataset = Dataset.create(
     dataset_name="Iris Processed Dataset",
-    dataset_project="AI_Studio_Demo"
+    dataset_project="AI_Studio_HPO_Demo"
 )
 
 # Save processed data to temporary files

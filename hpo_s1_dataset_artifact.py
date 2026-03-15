@@ -11,7 +11,7 @@ logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 # Initialize the task
-task = Task.init(project_name="AI_Studio_Demo", task_name="Pipeline step 1 dataset artifact")
+task = Task.init(project_name="AI_Studio_HPO_Demo", task_name="HPO step 1 dataset artifact")
 
 # only create the task, we will actually execute it later
 task.execute_remotely()
@@ -24,7 +24,7 @@ data['target'] = iris.target
 # Create a new dataset in ClearML
 dataset = Dataset.create(
     dataset_name="Iris Raw Dataset",
-    dataset_project="AI_Studio_Demo"
+    dataset_project="AI_Studio_HPO_Demo"
 )
 
 # Save the data to a temporary file

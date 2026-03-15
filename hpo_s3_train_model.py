@@ -22,8 +22,8 @@ os.makedirs('figs', exist_ok=True)
 
 # Initialize the task
 task = Task.init(
-    project_name='AI_Studio_Demo',
-    task_name='Pipeline step 3 train model',
+    project_name='AI_Studio_HPO_Demo',
+    task_name='HPO step 3 train model',
     task_type=Task.TaskTypes.training,
     reuse_last_task_id=False
 )
@@ -31,7 +31,7 @@ task = Task.init(
 # Connect parameters
 args = {
     'processed_dataset_id': '',
-    'test_queue': 'pipeline',
+    'test_queue': 'hpo_demo',
     'num_epochs': 20,
     'batch_size': 16,
     'learning_rate': 1e-3,

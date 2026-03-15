@@ -112,14 +112,14 @@ python s3_train_model.py
 These will appear in your ClearML dashboard and serve as base tasks for the pipeline.
 
 #### Step 1.5: Initial ClearML Queue
-Create Queue with name as `task` (or your customized one), ensure it is consistent in `pipeline_from_tasks.py`:
+Create Queue with name as `basic_demo` (or your customized one), ensure it is consistent in `pipeline_from_tasks.py`:
 ```python
-pipe.set_default_execution_queue("task")
+pipe.set_default_execution_queue("basic_demo")
 ```
 
 Run the agent for queue worker:
 ```bash
-clearml-agent daemon --queue "task" --detached
+clearml-agent daemon --queue "basic_demo" --detached
 ```
 
 #### Step 2: Run the Pipeline
@@ -159,14 +159,14 @@ python final_model.py
 ```
 
 #### Step 1.5: Initial ClearML Queue
-Create Queue with name as `pipeline` (or your customized one), ensure it is consistent in `pipeline_hpo.py`:
+Create Queue with name as `hpo_demo` (or your customized one), ensure it is consistent in `pipeline_hpo.py`:
 ```python
-EXECUTION_QUEUE = "pipeline"
+EXECUTION_QUEUE = "hpo_demo"
 ```
 
 Run the agent for queue worker:
 ```bash
-clearml-agent daemon --queue "pipeline" --detached
+clearml-agent daemon --queue "hpo_demo" --detached
 ```
 
 #### Step 2: Run the HPO Pipeline
