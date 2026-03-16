@@ -1,8 +1,11 @@
 name: Run ClearML Task
 
 on:
-  pull_request:
-    branches: [main]
+    push:
+        branches: [main]
+    pull_request:
+        branches: [main]
+
 
 jobs:
   run_pipeline:
@@ -35,5 +38,3 @@ jobs:
       - name: Run pipeline
         run: |
           python s1_dataset_artifact.py
-
-          
