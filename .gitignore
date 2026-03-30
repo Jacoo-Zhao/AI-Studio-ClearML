@@ -3,3 +3,4 @@
 figs/
 .credentials
 .ipynb_checkpoints/
+__pycache__/

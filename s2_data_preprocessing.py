@@ -1,3 +1,5 @@
+"s2_data_preprocessing.py"
+
 import pickle
 from clearml import Task, StorageManager
 from sklearn.model_selection import train_test_split
@@ -10,7 +12,7 @@ task = Task.init(project_name="AI_Studio_Basic_Demo", task_name="Pipeline step 2
 # program arguments
 # Use either dataset_task_id to point to a tasks artifact or use a direct url with dataset_url
 args = {
-    'dataset_task_id': '',
+    'dataset_task_id': '', 
     'random_state': 42,
     'test_size': 0.2,
 }
@@ -21,7 +23,6 @@ print('Arguments: {}'.format(args))
 
 # only create the task, we will actually execute it later
 task.execute_remotely()
-#
 
 # get dataset from task's artifact
 if args['dataset_task_id']:

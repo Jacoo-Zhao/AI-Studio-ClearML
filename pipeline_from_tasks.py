@@ -28,27 +28,18 @@ def run_pipeline():
     # Connecting ClearML with the current pipeline,
     # from here on everything is logged automatically
     pipe = PipelineController(
-        name="AI_Studio_Basic_Pipeline", project="AI_Studio_Basic_Demo", version="0.0.1", add_pipeline_tags=False
+        name="AI_Studio_Basic_Pipeline", 
+        project="AI_Studio_Basic_Demo", 
+        version="0.0.1", 
+        add_pipeline_tags=False,
     )
 
-    # pipe.add_parameter(
-    #     "url",
-    #     "dataset_url",
-    # )
-
-    # pipe.add_parameter(
-    #     name="url",
-    #     default="https://files.clear.ml/AI_Studio_Demo/Pipeline%20step%202%20process%20dataset.d69cec0ccc5a4c6b8900e61489b01847/artifacts/X_test/X_test.npz",
-    #     description="URL of the dataset"
-    # )
-
-    pipe.set_default_execution_queue("basic_demo")
+    pipe.set_default_execution_queue("pipeline")
 
     pipe.add_step(
         name="stage_data",
         base_task_project="AI_Studio_Basic_Demo",
         base_task_name="Pipeline step 1 dataset artifact",
-        # parameter_override={"General/dataset_url": "${pipeline.url}"},
     )
 
     pipe.add_step(
@@ -74,7 +65,6 @@ def run_pipeline():
     # for debugging purposes use local jobs
     pipe.start_locally()
 
-    # Starting the pipeline (in the background)
-    # pipe.start(queue="basic_demo")
-    # pipe.start(queue="pipeline_controller")
+    # # Starting the pipeline (in the background)
+    # pipe.start(queue="pipeline")
     # print("done")
