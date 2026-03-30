@@ -34,7 +34,7 @@ def run_pipeline():
         add_pipeline_tags=False,
     )
 
-    pipe.set_default_execution_queue("pipeline")
+    pipe.set_default_execution_queue("tasks")
 
     pipe.add_step(
         name="stage_data",
@@ -63,8 +63,8 @@ def run_pipeline():
     )
 
     # for debugging purposes use local jobs
-    pipe.start_locally()
+    # pipe.start_locally(run_pipeline_steps_locally=True)
 
     # # Starting the pipeline (in the background)
-    # pipe.start(queue="pipeline")
-    # print("done")
+    pipe.start(queue="pipeline_controller")
+    print("done")

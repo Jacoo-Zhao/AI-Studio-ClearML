@@ -7,7 +7,7 @@ import os
 task = Task.init(project_name="AI_Studio_Basic_Demo", task_name="Pipeline step 1 dataset artifact")
 
 # only create the task, we will actually execute it later
-# task.execute_remotely()
+task.execute_remotely()
 
 
 local_iris_pkl = StorageManager.get_local_copy(remote_url='https://github.com/allegroai/events/raw/master/odsc20-east/generic/iris_dataset.pkl')
