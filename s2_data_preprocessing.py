@@ -4,7 +4,7 @@ import pickle
 from clearml import Task, StorageManager
 from sklearn.model_selection import train_test_split
 # import pandas as pd
-#
+
 # Connecting ClearML with the current process,
 # from here on everything is logged automatically
 task = Task.init(project_name="AI_Studio_Basic_Demo", task_name="Pipeline step 2 process dataset")

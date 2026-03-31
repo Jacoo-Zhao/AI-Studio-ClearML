@@ -67,4 +67,4 @@ def run_pipeline():
 
     # # Starting the pipeline (in the background)
     pipe.start(queue="pipeline_controller")
-    print("done")
+    print("Pipeline completed. 🔥")

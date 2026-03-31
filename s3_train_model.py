@@ -20,7 +20,7 @@ logger = Logger.current_logger()
 
 # Arguments
 args = {
-    'dataset_task_id': '', # 20acb1344f25474d9b26a4ef4b8e3006 replace the value only when you need debug locally
+    'dataset_task_id': '',
 }
 task.connect(args)
 
